@@ -5,16 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Documentation
-
-- Comprehensive README update with detailed explanations ([174960f](https://github.com/RAprogramm/rust-prod-diff-checker/commit/174960f6b05faf923f07e8e655c0211fddf40caa))
-
 ## [1.1.0] - 2025-11-23
 
+### CI/CD
+
+- Add crates.io publish job on tag push ([be5666f](https://github.com/RAprogramm/rust-prod-diff-checker/commit/be5666f0752b5899675f7d558a83567ad1428dbf))
+
 ### Documentation
 
+- Update changelog [skip ci] ([8014b73](https://github.com/RAprogramm/rust-prod-diff-checker/commit/8014b73aa54143144fb72c48f1228256ba8cdd20))
+- Comprehensive README update with detailed explanations ([174960f](https://github.com/RAprogramm/rust-prod-diff-checker/commit/174960f6b05faf923f07e8e655c0211fddf40caa))
 - Update changelog [skip ci] ([aa98a92](https://github.com/RAprogramm/rust-prod-diff-checker/commit/aa98a927d5f1a77e03ea9b8a8275de52605f2121))
 - Update changelog [skip ci] ([d84d7d5](https://github.com/RAprogramm/rust-prod-diff-checker/commit/d84d7d5dce12d68f93e75bb013bb3a36c432b5e6))
 - Update changelog [skip ci] ([1e6368c](https://github.com/RAprogramm/rust-prod-diff-checker/commit/1e6368c6b0c10377811d2d55509e28f4c32b7ff6))
@@ -88,7 +88,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Filter Rust keywords in property tests ([1ee0fcc](https://github.com/RAprogramm/rust-prod-diff-checker/commit/1ee0fcca334e6cc4077b93a47ba453b6c0cab6cf))
 
-[Unreleased]: https://github.com/RAprogramm/rust-prod-diff-checker/compare/v1.1.0...HEAD
 [1.1.0]: https://github.com/RAprogramm/rust-prod-diff-checker/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/RAprogramm/rust-prod-diff-checker/releases/tag/v1.0.0
 

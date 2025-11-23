@@ -1,5 +1,5 @@
 name: 'Rust PR Diff Analyzer'
-description: 'Semantic analyzer for Rust PR diffs that distinguishes production code from test code'
+description: 'Analyze and limit PR size by distinguishing production code from test code using Rust AST analysis'
 author: 'RAprogramm'
 
 branding:

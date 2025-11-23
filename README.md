@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/RAprogramm/rust-prod-diff-checker/blob/main/LICENSES/MIT.txt)
 [![REUSE](https://api.reuse.software/badge/github.com/RAprogramm/rust-prod-diff-checker)](https://api.reuse.software/info/github.com/RAprogramm/rust-prod-diff-checker)
 
-Semantic analyzer for Rust PR diffs that distinguishes production code from test code using AST analysis.
+Analyze and limit PR size by distinguishing production code from test code using Rust AST analysis. Helps enforce PR size limits by counting only meaningful production code changes, not tests.
 
 ## Features
 

@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/RAprogramm/rust-prod-diff-checker/actions/workflows/ci.yml/badge.svg)](https://github.com/RAprogramm/rust-prod-diff-checker/actions/workflows/ci.yml)
 [![Release](https://github.com/RAprogramm/rust-prod-diff-checker/actions/workflows/release.yml/badge.svg)](https://github.com/RAprogramm/rust-prod-diff-checker/actions/workflows/release.yml)
+[![codecov](https://codecov.io/gh/RAprogramm/rust-prod-diff-checker/graph/badge.svg?token=cbXm5iD9PQ)](https://codecov.io/gh/RAprogramm/rust-prod-diff-checker)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/RAprogramm/rust-prod-diff-checker/blob/main/LICENSES/MIT.txt)
 [![REUSE](https://api.reuse.software/badge/github.com/RAprogramm/rust-prod-diff-checker)](https://api.reuse.software/info/github.com/RAprogramm/rust-prod-diff-checker)
 
@@ -195,6 +196,25 @@ fn main() -> Result<(), rust_diff_analyzer::AppError> {
     Ok(())
 }
 ```
+
+## Coverage
+
+<details>
+<summary>Coverage Graphs</summary>
+
+### Sunburst
+
+![Sunburst](https://codecov.io/gh/RAprogramm/rust-prod-diff-checker/graphs/sunburst.svg?token=cbXm5iD9PQ)
+
+### Grid
+
+![Grid](https://codecov.io/gh/RAprogramm/rust-prod-diff-checker/graphs/tree.svg?token=cbXm5iD9PQ)
+
+### Icicle
+
+![Icicle](https://codecov.io/gh/RAprogramm/rust-prod-diff-checker/graphs/icicle.svg?token=cbXm5iD9PQ)
+
+</details>
 
 ## License
 

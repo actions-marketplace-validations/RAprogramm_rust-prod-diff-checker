@@ -66,7 +66,7 @@ jobs:
           fetch-depth: 0
 
       - name: Analyze PR
-        uses: RAprogramm/rust-diff-analyzer@v1
+        uses: RAprogramm/rust-prod-diff-checker@v1
         with:
           max_prod_units: 30
           max_weighted_score: 100

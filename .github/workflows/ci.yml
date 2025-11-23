@@ -24,7 +24,7 @@ jobs:
       deps: ${{ steps.filter.outputs.deps }}
       reuse: ${{ steps.filter.outputs.reuse }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.0
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -53,7 +53,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.rust == 'true' || startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.0
       - uses: dtolnay/rust-toolchain@nightly
         with:
           components: rustfmt
@@ -65,7 +65,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.rust == 'true' || startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.0
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
@@ -82,7 +82,7 @@ jobs:
       (needs.fmt.result == 'success' || needs.fmt.result == 'skipped') &&
       (needs.clippy.result == 'success' || needs.clippy.result == 'skipped')
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.0
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: llvm-tools-preview
@@ -118,7 +118,7 @@ jobs:
       (needs.fmt.result == 'success' || needs.fmt.result == 'skipped') &&
       (needs.clippy.result == 'success' || needs.clippy.result == 'skipped')
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.0
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - run: cargo doc --no-deps --all-features
@@ -134,7 +134,7 @@ jobs:
       (needs.changes.outputs.rust == 'true' || startsWith(github.ref, 'refs/tags/v')) &&
       needs.test.result == 'success'
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.0
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - run: cargo bench --no-run
@@ -145,7 +145,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.deps == 'true' || startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.0
       - uses: rustsec/audit-check@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -156,7 +156,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.reuse == 'true' || startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.0
       - uses: fsfe/reuse-action@v6
 
   build:
@@ -172,7 +172,7 @@ jobs:
       (needs.audit.result == 'success' || needs.audit.result == 'skipped') &&
       (needs.reuse.result == 'success' || needs.reuse.result == 'skipped')
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.0
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - run: cargo build --release --all-features
@@ -189,7 +189,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.0
         with:
           fetch-depth: 0
           ssh-key: ${{ secrets.DEPLOY_KEY }}
@@ -255,7 +255,7 @@ jobs:
             archive: zip
             cross: false
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.0
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -302,7 +302,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.0
         with:
           fetch-depth: 0
 
@@ -315,7 +315,7 @@ jobs:
         env:
           OUTPUT: RELEASE_NOTES.md
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         with:
           path: artifacts
 
@@ -331,7 +331,7 @@ jobs:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '.')
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.0
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Publish

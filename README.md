@@ -71,7 +71,25 @@ jobs:
           max_prod_units: 30
           max_weighted_score: 100
           fail_on_exceed: true
+          post_comment: true
 ```
+
+### PR Comments
+
+Enable `post_comment: true` to automatically post analysis results as PR comments:
+
+```yaml
+- name: Analyze PR
+  uses: RAprogramm/rust-prod-diff-checker@v1
+  with:
+    post_comment: true
+    update_comment: true  # Update existing comment instead of creating new
+```
+
+The comment includes:
+- Summary table with production vs test metrics
+- Weighted score with pass/fail status
+- Collapsible list of changed code units
 
 ### Configuration File
 
@@ -95,7 +113,15 @@ const_static = 1
 [limits]
 max_prod_units = 30
 max_weighted_score = 100
+max_prod_lines = 200
 fail_on_exceed = true
+
+# Optional: per-type limits for fine-grained control
+[limits.per_type]
+functions = 5
+structs = 3
+traits = 2
+impl_blocks = 10
 
 [output]
 format = "github"

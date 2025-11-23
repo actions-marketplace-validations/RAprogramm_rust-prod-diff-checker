@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+
+- Add contributing guidelines with RustManifest reference ([9243dce](https://github.com/RAprogramm/rust-prod-diff-checker/commit/9243dce351121eb0d5bab646b7fa0dadd7ca662f))
+- Update changelog [skip ci] ([c841ee0](https://github.com/RAprogramm/rust-prod-diff-checker/commit/c841ee03def8f3d5374ee1ec425bfa94d1975330))
+
 ### Fixed
 
 - Changelog footer template macro scope and first release handling ([efca381](https://github.com/RAprogramm/rust-prod-diff-checker/commit/efca3811bb95f19e04ba376f0f2f9d444b273eea))

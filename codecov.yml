@@ -31,17 +31,36 @@ ignore:
   - "examples/**"
   - "tests/**"
 
-flags:
-  lib:
-    paths:
-      - "src/lib.rs"
-      - "src/analysis/**"
-      - "src/config.rs"
-      - "src/error.rs"
-      - "src/git/**"
-      - "src/output/**"
+flag_management:
+  default_rules:
     carryforward: true
-  bin:
-    paths:
-      - "src/bin/**"
-    carryforward: true
+    statuses:
+      - type: project
+        target: auto
+        threshold: 5%
+      - type: patch
+        target: 80%
+  individual_flags:
+    - name: lib
+      paths:
+        - src/lib.rs
+        - src/analysis/**
+        - src/config.rs
+        - src/error.rs
+        - src/git/**
+        - src/output/**
+      carryforward: true
+      statuses:
+        - type: project
+          target: auto
+        - type: patch
+          target: 80%
+    - name: bin
+      paths:
+        - src/bin/**
+      carryforward: true
+      statuses:
+        - type: project
+          target: auto
+        - type: patch
+          target: 70%

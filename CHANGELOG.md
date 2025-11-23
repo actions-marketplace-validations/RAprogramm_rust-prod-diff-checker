@@ -9,12 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 
+- Update changelog [skip ci] ([927bc61](https://github.com/RAprogramm/rust-prod-diff-checker/commit/927bc613af921ed690dfe8388d5ab1d31aa837a0))
 - Update changelog [skip ci] ([43fe9cc](https://github.com/RAprogramm/rust-prod-diff-checker/commit/43fe9cc9dd8e947db5603858b170c7f91ddc760f))
 - Add contributing guidelines with RustManifest reference ([9243dce](https://github.com/RAprogramm/rust-prod-diff-checker/commit/9243dce351121eb0d5bab646b7fa0dadd7ca662f))
 - Update changelog [skip ci] ([c841ee0](https://github.com/RAprogramm/rust-prod-diff-checker/commit/c841ee03def8f3d5374ee1ec425bfa94d1975330))
 
 ### Fixed
 
+- Correct action repository name in README ([766ea00](https://github.com/RAprogramm/rust-prod-diff-checker/commit/766ea0047959b53959d19e7da4b95fe652501e6d))
 - Correct commit message format in contributing guide ([25241ef](https://github.com/RAprogramm/rust-prod-diff-checker/commit/25241ef734eb5558d443d14d83f429d3b2b76ea1))
 - Changelog footer template macro scope and first release handling ([efca381](https://github.com/RAprogramm/rust-prod-diff-checker/commit/efca3811bb95f19e04ba376f0f2f9d444b273eea))
 

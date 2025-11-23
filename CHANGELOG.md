@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 
+- Add Hits-of-Code badge ([8971ba7](https://github.com/RAprogramm/rust-prod-diff-checker/commit/8971ba7612804487a006fec6370821072d5af4d2))
+- Update changelog [skip ci] ([0982176](https://github.com/RAprogramm/rust-prod-diff-checker/commit/0982176a4e2f5afe119cb1f34366954848d848d3))
 - Update changelog ([35cb5f0](https://github.com/RAprogramm/rust-prod-diff-checker/commit/35cb5f073bd62f6bc03389eefa48a88845d8e20f))
 - Add coverage graph descriptions ([4cb52ac](https://github.com/RAprogramm/rust-prod-diff-checker/commit/4cb52ac3e8c52497fe862d08b9e2281541e51946))
 - Update changelog ([a3275e0](https://github.com/RAprogramm/rust-prod-diff-checker/commit/a3275e05a1464903253c28828ed94b21bb72128c))

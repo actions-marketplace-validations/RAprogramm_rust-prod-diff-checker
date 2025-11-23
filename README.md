@@ -204,13 +204,19 @@ fn main() -> Result<(), rust_diff_analyzer::AppError> {
 
 ### Sunburst
 
+The inner-most circle is the entire project, moving away from the center are folders then, finally, a single file. The size and color of each slice is representing the number of statements and the coverage, respectively.
+
 ![Sunburst](https://codecov.io/gh/RAprogramm/rust-prod-diff-checker/graphs/sunburst.svg?token=cbXm5iD9PQ)
 
 ### Grid
 
+Each block represents a single file in the project. The size and color of each block is represented by the number of statements and the coverage, respectively.
+
 ![Grid](https://codecov.io/gh/RAprogramm/rust-prod-diff-checker/graphs/tree.svg?token=cbXm5iD9PQ)
 
 ### Icicle
+
+The top section represents the entire project. Proceeding with folders and finally individual files. The size and color of each slice is representing the number of statements and the coverage, respectively.
 
 ![Icicle](https://codecov.io/gh/RAprogramm/rust-prod-diff-checker/graphs/icicle.svg?token=cbXm5iD9PQ)
 

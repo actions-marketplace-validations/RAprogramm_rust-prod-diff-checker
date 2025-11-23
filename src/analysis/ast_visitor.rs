@@ -1,9 +1,8 @@
 use proc_macro2::Span;
-use syn::spanned::Spanned;
-use syn::visit::Visit;
 use syn::{
-    Attribute, File, ImplItem, Item, ItemConst, ItemEnum, ItemFn, ItemImpl, ItemMacro, ItemMod,
+    Attribute, File, ImplItem, ItemConst, ItemEnum, ItemFn, ItemImpl, ItemMacro, ItemMod,
     ItemStatic, ItemStruct, ItemTrait, ItemType, TraitItem, Visibility as SynVisibility,
+    spanned::Spanned, visit::Visit,
 };
 
 use crate::types::{LineSpan, SemanticUnit, SemanticUnitKind, Visibility};
@@ -84,9 +83,7 @@ impl SemanticUnitVisitor {
     fn extract_attributes(&self, attrs: &[Attribute]) -> Vec<String> {
         attrs
             .iter()
-            .filter_map(|attr| {
-                attr.path().get_ident().map(|ident| ident.to_string())
-            })
+            .filter_map(|attr| attr.path().get_ident().map(|ident| ident.to_string()))
             .collect()
     }
 
@@ -96,12 +93,12 @@ impl SemanticUnitVisitor {
             if path.is_ident("test") || path.is_ident("bench") {
                 return true;
             }
-            if path.is_ident("cfg") {
-                if let Ok(meta) = attr.meta.require_list() {
-                    let tokens = meta.tokens.to_string();
-                    if tokens.contains("test") {
-                        return true;
-                    }
+            if path.is_ident("cfg")
+                && let Ok(meta) = attr.meta.require_list()
+            {
+                let tokens = meta.tokens.to_string();
+                if tokens.contains("test") {
+                    return true;
                 }
             }
             false
@@ -110,11 +107,11 @@ impl SemanticUnitVisitor {
 
     fn is_test_module(&self, attrs: &[Attribute]) -> bool {
         attrs.iter().any(|attr| {
-            if attr.path().is_ident("cfg") {
-                if let Ok(meta) = attr.meta.require_list() {
-                    let tokens = meta.tokens.to_string();
-                    return tokens.contains("test");
-                }
+            if attr.path().is_ident("cfg")
+                && let Ok(meta) = attr.meta.require_list()
+            {
+                let tokens = meta.tokens.to_string();
+                return tokens.contains("test");
             }
             false
         })
@@ -130,10 +127,8 @@ impl SemanticUnitVisitor {
     ) {
         let mut attributes = self.extract_attributes(attrs);
 
-        if self.in_test_module {
-            if !attributes.contains(&"cfg_test".to_string()) {
-                attributes.push("cfg_test".to_string());
-            }
+        if self.in_test_module && !attributes.contains(&"cfg_test".to_string()) {
+            attributes.push("cfg_test".to_string());
         }
 
         if self.has_test_attribute(attrs) && !attributes.contains(&"test".to_string()) {
@@ -206,7 +201,10 @@ impl<'ast> Visit<'ast> for SemanticUnitVisitor {
         let name = if let Some((_, path, _)) = &node.trait_ {
             format!(
                 "{} for {}",
-                path.segments.last().map(|s| s.ident.to_string()).unwrap_or_default(),
+                path.segments
+                    .last()
+                    .map(|s| s.ident.to_string())
+                    .unwrap_or_default(),
                 type_to_string(&node.self_ty)
             )
         } else {
@@ -419,9 +417,21 @@ mod tests {
         let units = SemanticUnitVisitor::extract(&file);
 
         assert_eq!(units.len(), 3);
-        assert!(units.iter().any(|u| u.name == "Foo" && matches!(u.kind, SemanticUnitKind::Struct)));
-        assert!(units.iter().any(|u| u.name == "Foo" && matches!(u.kind, SemanticUnitKind::Impl)));
-        assert!(units.iter().any(|u| u.name == "new" && matches!(u.kind, SemanticUnitKind::Function)));
+        assert!(
+            units
+                .iter()
+                .any(|u| u.name == "Foo" && matches!(u.kind, SemanticUnitKind::Struct))
+        );
+        assert!(
+            units
+                .iter()
+                .any(|u| u.name == "Foo" && matches!(u.kind, SemanticUnitKind::Impl))
+        );
+        assert!(
+            units
+                .iter()
+                .any(|u| u.name == "new" && matches!(u.kind, SemanticUnitKind::Function))
+        );
     }
 
     #[test]
@@ -440,13 +450,22 @@ mod tests {
         let file = syn::parse_file(code).expect("parse failed");
         let units = SemanticUnitVisitor::extract(&file);
 
-        let prod_fn = units.iter().find(|u| u.name == "production").expect("production not found");
+        let prod_fn = units
+            .iter()
+            .find(|u| u.name == "production")
+            .expect("production not found");
         assert!(!prod_fn.has_attribute("cfg_test"));
 
-        let helper_fn = units.iter().find(|u| u.name == "helper").expect("helper not found");
+        let helper_fn = units
+            .iter()
+            .find(|u| u.name == "helper")
+            .expect("helper not found");
         assert!(helper_fn.has_attribute("cfg_test"));
 
-        let test_fn = units.iter().find(|u| u.name == "test_it").expect("test_it not found");
+        let test_fn = units
+            .iter()
+            .find(|u| u.name == "test_it")
+            .expect("test_it not found");
         assert!(test_fn.has_attribute("test"));
         assert!(test_fn.has_attribute("cfg_test"));
     }

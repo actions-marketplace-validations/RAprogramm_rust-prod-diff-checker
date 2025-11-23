@@ -1,10 +1,7 @@
-use std::fs;
-use std::path::Path;
-
-use crate::error::AppError;
-use crate::types::SemanticUnit;
+use std::{fs, path::Path};
 
 use super::ast_visitor::SemanticUnitVisitor;
+use crate::{error::AppError, types::SemanticUnit};
 
 /// Extracts semantic units from a Rust source file
 ///
@@ -23,8 +20,9 @@ use super::ast_visitor::SemanticUnitVisitor;
 /// # Examples
 ///
 /// ```no_run
-/// use rust_diff_analyzer::analysis::extract_semantic_units;
 /// use std::path::Path;
+///
+/// use rust_diff_analyzer::analysis::extract_semantic_units;
 ///
 /// let units = extract_semantic_units(Path::new("src/lib.rs"));
 /// ```
@@ -55,8 +53,9 @@ pub fn extract_semantic_units(path: &Path) -> Result<Vec<SemanticUnit>, AppError
 /// # Examples
 ///
 /// ```
-/// use rust_diff_analyzer::analysis::extractor::extract_semantic_units_from_str;
 /// use std::path::Path;
+///
+/// use rust_diff_analyzer::analysis::extractor::extract_semantic_units_from_str;
 ///
 /// let code = "fn main() {}";
 /// let units = extract_semantic_units_from_str(code, Path::new("main.rs")).unwrap();

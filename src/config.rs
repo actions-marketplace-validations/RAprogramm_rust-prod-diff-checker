@@ -1,6 +1,4 @@
-use std::collections::HashSet;
-use std::fs;
-use std::path::{Path, PathBuf};
+use std::{collections::HashSet, fs, path::Path};
 
 use serde::{Deserialize, Serialize};
 
@@ -151,21 +149,16 @@ fn default_fail_on_exceed() -> bool {
 }
 
 /// Output format
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum OutputFormat {
     /// GitHub Actions output format
+    #[default]
     Github,
     /// JSON output format
     Json,
     /// Human-readable output format
     Human,
-}
-
-impl Default for OutputFormat {
-    fn default() -> Self {
-        Self::Github
-    }
 }
 
 /// Output configuration
@@ -227,8 +220,9 @@ impl Config {
     /// # Examples
     ///
     /// ```no_run
-    /// use rust_diff_analyzer::Config;
     /// use std::path::Path;
+    ///
+    /// use rust_diff_analyzer::Config;
     ///
     /// let config = Config::from_file(Path::new(".rust-diff-analyzer.toml"));
     /// ```
@@ -316,8 +310,9 @@ impl Config {
     /// # Examples
     ///
     /// ```
-    /// use rust_diff_analyzer::Config;
     /// use std::path::Path;
+    ///
+    /// use rust_diff_analyzer::Config;
     ///
     /// let config = Config::default();
     /// assert!(!config.should_ignore(Path::new("src/lib.rs")));
@@ -343,8 +338,9 @@ impl Config {
     /// # Examples
     ///
     /// ```
-    /// use rust_diff_analyzer::Config;
     /// use std::path::Path;
+    ///
+    /// use rust_diff_analyzer::Config;
     ///
     /// let config = Config::default();
     /// assert!(config.is_test_path(Path::new("tests/integration.rs")));
@@ -371,17 +367,16 @@ impl Config {
     /// # Examples
     ///
     /// ```
-    /// use rust_diff_analyzer::Config;
     /// use std::path::Path;
+    ///
+    /// use rust_diff_analyzer::Config;
     ///
     /// let config = Config::default();
     /// assert!(config.is_build_script(Path::new("build.rs")));
     /// assert!(!config.is_build_script(Path::new("src/lib.rs")));
     /// ```
     pub fn is_build_script(&self, path: &Path) -> bool {
-        path.file_name()
-            .map(|n| n == "build.rs")
-            .unwrap_or(false)
+        path.file_name().map(|n| n == "build.rs").unwrap_or(false)
     }
 }
 
@@ -448,9 +443,7 @@ impl ConfigBuilder {
     /// ```
     /// use rust_diff_analyzer::config::ConfigBuilder;
     ///
-    /// let config = ConfigBuilder::new()
-    ///     .max_prod_units(50)
-    ///     .build();
+    /// let config = ConfigBuilder::new().max_prod_units(50).build();
     /// ```
     pub fn max_prod_units(mut self, limit: usize) -> Self {
         self.config.limits.max_prod_units = limit;
@@ -472,9 +465,7 @@ impl ConfigBuilder {
     /// ```
     /// use rust_diff_analyzer::config::ConfigBuilder;
     ///
-    /// let config = ConfigBuilder::new()
-    ///     .max_weighted_score(200)
-    ///     .build();
+    /// let config = ConfigBuilder::new().max_weighted_score(200).build();
     /// ```
     pub fn max_weighted_score(mut self, limit: usize) -> Self {
         self.config.limits.max_weighted_score = limit;
@@ -496,9 +487,7 @@ impl ConfigBuilder {
     /// ```
     /// use rust_diff_analyzer::config::ConfigBuilder;
     ///
-    /// let config = ConfigBuilder::new()
-    ///     .fail_on_exceed(false)
-    ///     .build();
+    /// let config = ConfigBuilder::new().fail_on_exceed(false).build();
     /// ```
     pub fn fail_on_exceed(mut self, fail: bool) -> Self {
         self.config.limits.fail_on_exceed = fail;
@@ -547,9 +536,7 @@ impl ConfigBuilder {
     /// ```
     /// use rust_diff_analyzer::config::ConfigBuilder;
     ///
-    /// let config = ConfigBuilder::new()
-    ///     .add_ignore_path("fixtures/")
-    ///     .build();
+    /// let config = ConfigBuilder::new().add_ignore_path("fixtures/").build();
     /// ```
     pub fn add_ignore_path(mut self, path: &str) -> Self {
         self.config

@@ -1,13 +1,13 @@
-use std::collections::HashMap;
-use std::path::Path;
-
-use crate::classifier::classify_unit;
-use crate::config::Config;
-use crate::error::AppError;
-use crate::git::FileDiff;
-use crate::types::{Change, SemanticUnit};
+use std::{collections::HashMap, path::Path};
 
 use super::extractor::extract_semantic_units_from_str;
+use crate::{
+    classifier::classify_unit,
+    config::Config,
+    error::AppError,
+    git::FileDiff,
+    types::{Change, SemanticUnit},
+};
 
 /// Maps diff changes to semantic units
 ///
@@ -28,9 +28,9 @@ use super::extractor::extract_semantic_units_from_str;
 /// # Examples
 ///
 /// ```no_run
-/// use rust_diff_analyzer::analysis::map_changes;
-/// use rust_diff_analyzer::config::Config;
 /// use std::fs;
+///
+/// use rust_diff_analyzer::{analysis::map_changes, config::Config};
 ///
 /// let diffs = vec![];
 /// let config = Config::default();
@@ -69,18 +69,14 @@ where
 
         for line in &added_lines {
             if let Some(unit) = find_containing_unit(&units, *line) {
-                let entry = unit_changes
-                    .entry(unit.name.clone())
-                    .or_insert((0, 0));
+                let entry = unit_changes.entry(unit.name.clone()).or_insert((0, 0));
                 entry.0 += 1;
             }
         }
 
         for line in &removed_lines {
             if let Some(unit) = find_containing_unit(&units, *line) {
-                let entry = unit_changes
-                    .entry(unit.name.clone())
-                    .or_insert((0, 0));
+                let entry = unit_changes.entry(unit.name.clone()).or_insert((0, 0));
                 entry.1 += 1;
             }
         }

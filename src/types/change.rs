@@ -2,8 +2,7 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use super::classification::CodeType;
-use super::semantic_unit::SemanticUnit;
+use super::{classification::CodeType, semantic_unit::SemanticUnit};
 
 /// A change to a semantic unit
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -39,8 +38,9 @@ impl Change {
     ///
     /// ```
     /// use std::path::PathBuf;
+    ///
     /// use rust_diff_analyzer::types::{
-    ///     Change, CodeType, SemanticUnit, SemanticUnitKind, Visibility, LineSpan
+    ///     Change, CodeType, LineSpan, SemanticUnit, SemanticUnitKind, Visibility,
     /// };
     ///
     /// let unit = SemanticUnit::new(
@@ -87,8 +87,9 @@ impl Change {
     ///
     /// ```
     /// use std::path::PathBuf;
+    ///
     /// use rust_diff_analyzer::types::{
-    ///     Change, CodeType, SemanticUnit, SemanticUnitKind, Visibility, LineSpan
+    ///     Change, CodeType, LineSpan, SemanticUnit, SemanticUnitKind, Visibility,
     /// };
     ///
     /// let unit = SemanticUnit::new(
@@ -125,6 +126,14 @@ pub struct Summary {
     pub prod_other: usize,
     /// Total number of test-related units changed
     pub test_units: usize,
+    /// Lines added in production code
+    pub prod_lines_added: usize,
+    /// Lines removed from production code
+    pub prod_lines_removed: usize,
+    /// Lines added in test code
+    pub test_lines_added: usize,
+    /// Lines removed from test code
+    pub test_lines_removed: usize,
     /// Weighted score based on configuration
     pub weighted_score: usize,
     /// Whether any limit was exceeded
@@ -148,6 +157,10 @@ impl Summary {
     ///     prod_structs: 2,
     ///     prod_other: 1,
     ///     test_units: 10,
+    ///     prod_lines_added: 50,
+    ///     prod_lines_removed: 20,
+    ///     test_lines_added: 100,
+    ///     test_lines_removed: 30,
     ///     weighted_score: 0,
     ///     exceeds_limit: false,
     /// };

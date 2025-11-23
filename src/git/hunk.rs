@@ -227,7 +227,8 @@ impl Hunk {
     /// use rust_diff_analyzer::git::{Hunk, HunkLine};
     ///
     /// let mut hunk = Hunk::new(1, 2, 1, 1);
-    /// hunk.lines.push(HunkLine::removed(1, "old line".to_string()));
+    /// hunk.lines
+    ///     .push(HunkLine::removed(1, "old line".to_string()));
     /// assert_eq!(hunk.removed_count(), 1);
     /// ```
     pub fn removed_count(&self) -> usize {
@@ -253,13 +254,7 @@ impl Hunk {
     pub fn added_lines(&self) -> Vec<usize> {
         self.lines
             .iter()
-            .filter_map(|l| {
-                if l.is_added() {
-                    l.new_line
-                } else {
-                    None
-                }
-            })
+            .filter_map(|l| if l.is_added() { l.new_line } else { None })
             .collect()
     }
 
@@ -281,13 +276,7 @@ impl Hunk {
     pub fn removed_lines(&self) -> Vec<usize> {
         self.lines
             .iter()
-            .filter_map(|l| {
-                if l.is_removed() {
-                    l.old_line
-                } else {
-                    None
-                }
-            })
+            .filter_map(|l| if l.is_removed() { l.old_line } else { None })
             .collect()
     }
 }

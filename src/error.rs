@@ -1,6 +1,4 @@
-use std::fmt;
-use std::io;
-use std::path::PathBuf;
+use std::{fmt, io, path::PathBuf};
 
 /// Application error types for rust-diff-analyzer
 #[derive(Debug)]
@@ -47,7 +45,12 @@ impl fmt::Display for AppError {
                 write!(f, "failed to parse diff: {}", message)
             }
             Self::ConfigError { path, message } => {
-                write!(f, "failed to parse config '{}': {}", path.display(), message)
+                write!(
+                    f,
+                    "failed to parse config '{}': {}",
+                    path.display(),
+                    message
+                )
             }
             Self::ConfigValidation { field, message } => {
                 write!(f, "invalid config field '{}': {}", field, message)

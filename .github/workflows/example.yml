@@ -1,0 +1,77 @@
+name: Example - Analyze PR Diff
+
+on:
+  pull_request:
+    branches: [main, master]
+    paths:
+      - '**/*.rs'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+
+jobs:
+  analyze:
+    name: Analyze Rust Changes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Analyze PR diff
+        id: diff_analysis
+        uses: RAprogramm/rust-diff-analyzer@v1
+        with:
+          max_prod_units: '30'
+          max_weighted_score: '100'
+          fail_on_exceed: 'true'
+          output_format: 'github'
+
+      - name: Show results
+        run: |
+          echo "Production functions changed: ${{ steps.diff_analysis.outputs.prod_functions_changed }}"
+          echo "Production structs changed: ${{ steps.diff_analysis.outputs.prod_structs_changed }}"
+          echo "Test units changed: ${{ steps.diff_analysis.outputs.test_units_changed }}"
+          echo "Weighted score: ${{ steps.diff_analysis.outputs.weighted_score }}"
+          echo "Exceeds limit: ${{ steps.diff_analysis.outputs.exceeds_limit }}"
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prodFunctions = '${{ steps.diff_analysis.outputs.prod_functions_changed }}';
+            const prodStructs = '${{ steps.diff_analysis.outputs.prod_structs_changed }}';
+            const prodOther = '${{ steps.diff_analysis.outputs.prod_other_changed }}';
+            const testUnits = '${{ steps.diff_analysis.outputs.test_units_changed }}';
+            const weightedScore = '${{ steps.diff_analysis.outputs.weighted_score }}';
+            const exceedsLimit = '${{ steps.diff_analysis.outputs.exceeds_limit }}';
+
+            const totalProd = parseInt(prodFunctions) + parseInt(prodStructs) + parseInt(prodOther);
+
+            let status = '✅';
+            if (exceedsLimit === 'true') {
+              status = '⚠️';
+            }
+
+            const body = `## ${status} Rust PR Analysis
+
+            | Metric | Count |
+            |--------|-------|
+            | Production Functions | ${prodFunctions} |
+            | Production Structs | ${prodStructs} |
+            | Production Other | ${prodOther} |
+            | **Total Production** | **${totalProd}** |
+            | Test Units | ${testUnits} |
+            | **Weighted Score** | **${weightedScore}** |
+
+            ${exceedsLimit === 'true' ? '⚠️ **Warning**: Production code changes exceed configured limits.' : ''}
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });

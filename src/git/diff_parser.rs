@@ -1,8 +1,7 @@
 use std::path::PathBuf;
 
-use crate::error::AppError;
-
 use super::hunk::{Hunk, HunkLine};
+use crate::error::AppError;
 
 /// A file diff containing all hunks for a single file
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -29,8 +28,9 @@ impl FileDiff {
     /// # Examples
     ///
     /// ```
-    /// use rust_diff_analyzer::git::FileDiff;
     /// use std::path::PathBuf;
+    ///
+    /// use rust_diff_analyzer::git::FileDiff;
     ///
     /// let diff = FileDiff::new(PathBuf::from("src/lib.rs"));
     /// assert!(diff.hunks.is_empty());
@@ -52,8 +52,9 @@ impl FileDiff {
     /// # Examples
     ///
     /// ```
-    /// use rust_diff_analyzer::git::FileDiff;
     /// use std::path::PathBuf;
+    ///
+    /// use rust_diff_analyzer::git::FileDiff;
     ///
     /// let diff = FileDiff::new(PathBuf::from("src/lib.rs"));
     /// assert_eq!(diff.total_added(), 0);
@@ -71,8 +72,9 @@ impl FileDiff {
     /// # Examples
     ///
     /// ```
-    /// use rust_diff_analyzer::git::FileDiff;
     /// use std::path::PathBuf;
+    ///
+    /// use rust_diff_analyzer::git::FileDiff;
     ///
     /// let diff = FileDiff::new(PathBuf::from("src/lib.rs"));
     /// assert_eq!(diff.total_removed(), 0);
@@ -90,8 +92,9 @@ impl FileDiff {
     /// # Examples
     ///
     /// ```
-    /// use rust_diff_analyzer::git::FileDiff;
     /// use std::path::PathBuf;
+    ///
+    /// use rust_diff_analyzer::git::FileDiff;
     ///
     /// let diff = FileDiff::new(PathBuf::from("src/lib.rs"));
     /// assert!(diff.all_added_lines().is_empty());
@@ -109,8 +112,9 @@ impl FileDiff {
     /// # Examples
     ///
     /// ```
-    /// use rust_diff_analyzer::git::FileDiff;
     /// use std::path::PathBuf;
+    ///
+    /// use rust_diff_analyzer::git::FileDiff;
     ///
     /// let diff = FileDiff::new(PathBuf::from("src/lib.rs"));
     /// assert!(diff.all_removed_lines().is_empty());
@@ -128,8 +132,9 @@ impl FileDiff {
     /// # Examples
     ///
     /// ```
-    /// use rust_diff_analyzer::git::FileDiff;
     /// use std::path::PathBuf;
+    ///
+    /// use rust_diff_analyzer::git::FileDiff;
     ///
     /// let diff = FileDiff::new(PathBuf::from("src/lib.rs"));
     /// assert!(diff.is_rust_file());
@@ -207,31 +212,32 @@ pub fn parse_diff(input: &str) -> Result<Vec<FileDiff>, AppError> {
                 old_line = old_start;
                 new_line = new_start;
             }
-        } else if let Some(ref mut hunk) = current_hunk {
-            if let Some(first_char) = line.chars().next() {
-                let content = if line.len() > 1 {
-                    line[1..].to_string()
-                } else {
-                    String::new()
-                };
+        } else if let Some(ref mut hunk) = current_hunk
+            && let Some(first_char) = line.chars().next()
+        {
+            let content = if line.len() > 1 {
+                line[1..].to_string()
+            } else {
+                String::new()
+            };
 
-                match first_char {
-                    '+' => {
-                        hunk.lines.push(HunkLine::added(new_line, content));
-                        new_line += 1;
-                    }
-                    '-' => {
-                        hunk.lines.push(HunkLine::removed(old_line, content));
-                        old_line += 1;
-                    }
-                    ' ' => {
-                        hunk.lines.push(HunkLine::context(old_line, new_line, content));
-                        old_line += 1;
-                        new_line += 1;
-                    }
-                    '\\' => {}
-                    _ => {}
+            match first_char {
+                '+' => {
+                    hunk.lines.push(HunkLine::added(new_line, content));
+                    new_line += 1;
                 }
+                '-' => {
+                    hunk.lines.push(HunkLine::removed(old_line, content));
+                    old_line += 1;
+                }
+                ' ' => {
+                    hunk.lines
+                        .push(HunkLine::context(old_line, new_line, content));
+                    old_line += 1;
+                    new_line += 1;
+                }
+                '\\' => {}
+                _ => {}
             }
         }
     }
@@ -296,14 +302,18 @@ fn parse_hunk_header(line: &str) -> Result<(usize, usize, usize, usize), AppErro
 fn parse_range(range: &str) -> Result<(usize, usize), AppError> {
     let parts: Vec<&str> = range.split(',').collect();
 
-    let start = parts[0].parse::<usize>().map_err(|_| AppError::DiffParseError {
-        message: format!("invalid line number: {}", parts[0]),
-    })?;
+    let start = parts[0]
+        .parse::<usize>()
+        .map_err(|_| AppError::DiffParseError {
+            message: format!("invalid line number: {}", parts[0]),
+        })?;
 
     let count = if parts.len() > 1 {
-        parts[1].parse::<usize>().map_err(|_| AppError::DiffParseError {
-            message: format!("invalid line count: {}", parts[1]),
-        })?
+        parts[1]
+            .parse::<usize>()
+            .map_err(|_| AppError::DiffParseError {
+                message: format!("invalid line count: {}", parts[1]),
+            })?
     } else {
         1
     };

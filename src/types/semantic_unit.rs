@@ -244,7 +244,7 @@ impl SemanticUnit {
     /// # Examples
     ///
     /// ```
-    /// use rust_diff_analyzer::types::{SemanticUnit, SemanticUnitKind, Visibility, LineSpan};
+    /// use rust_diff_analyzer::types::{LineSpan, SemanticUnit, SemanticUnitKind, Visibility};
     ///
     /// let unit = SemanticUnit::new(
     ///     SemanticUnitKind::Function,
@@ -284,7 +284,7 @@ impl SemanticUnit {
     /// # Examples
     ///
     /// ```
-    /// use rust_diff_analyzer::types::{SemanticUnit, SemanticUnitKind, Visibility, LineSpan};
+    /// use rust_diff_analyzer::types::{LineSpan, SemanticUnit, SemanticUnitKind, Visibility};
     ///
     /// let unit = SemanticUnit::new(
     ///     SemanticUnitKind::Function,

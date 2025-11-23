@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/RAprogramm/rust-prod-diff-checker/actions/workflows/ci.yml/badge.svg)](https://github.com/RAprogramm/rust-prod-diff-checker/actions/workflows/ci.yml)
 [![Release](https://github.com/RAprogramm/rust-prod-diff-checker/actions/workflows/release.yml/badge.svg)](https://github.com/RAprogramm/rust-prod-diff-checker/actions/workflows/release.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://api.reuse.software/info/github.com/RAprogramm/rust-prod-diff-checker)
 [![REUSE](https://api.reuse.software/badge/github.com/RAprogramm/rust-prod-diff-checker)](https://api.reuse.software/info/github.com/RAprogramm/rust-prod-diff-checker)
 
 Semantic analyzer for Rust PR diffs that distinguishes production code from test code using AST analysis.

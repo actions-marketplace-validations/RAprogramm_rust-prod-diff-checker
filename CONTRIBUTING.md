@@ -69,21 +69,23 @@ Use issue number as branch name:
 
 ### Commit Messages
 
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
+Format: `#<issue_number> <type>: <description>`
 
 ```
-feat: add new output format
-fix: correct line counting in parser
-docs: update API examples
-test: add property tests for extractor
-refactor: simplify config loading
-chore: update dependencies
+#123 feat: add new output format
+#123 fix: correct line counting in parser
+#45 docs: update API examples
+#78 test: add property tests for extractor
+#90 refactor: simplify config loading
 ```
 
-For issue-linked commits:
-```
-feat: implement weighted scoring (#123)
-```
+Types:
+- `feat` - new feature
+- `fix` - bug fix
+- `docs` - documentation
+- `test` - tests
+- `refactor` - code refactoring
+- `chore` - maintenance tasks
 
 ### Pull Requests
 

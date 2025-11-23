@@ -38,3 +38,7 @@ License: MIT
 Files: .config/*
 Copyright: 2025 RAprogramm <andrey.rozanov.vl@gmail.com>
 License: MIT
+
+Files: codecov.yml
+Copyright: 2025 RAprogramm <andrey.rozanov.vl@gmail.com>
+License: MIT

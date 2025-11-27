@@ -95,6 +95,25 @@ Types:
 4. Create PR with descriptive title
 5. Include `Closes #<issue>` in description
 
+### Keep Production Code Changes Small
+
+**Code review quality degrades with size.** What matters is *production code*, not total lines changed.
+
+| Production Code | Review Quality | Risk |
+|-----------------|----------------|------|
+| < 100 lines | Thorough | Low |
+| 100-300 lines | Moderate | Medium |
+| 300+ lines | Superficial | High |
+
+**Tests and benchmarks don't count the same way:**
+
+- A PR with 50 lines in `src/` and 1000 lines of tests is **easy to review**
+- A PR with 300 lines in `src/` and 0 tests is **hard to review and risky**
+
+Use [rust-prod-diff-checker](https://github.com/RAprogramm/rust-prod-diff-checker) GitHub Action to automatically analyze PR size and separate production changes from tests/benchmarks.
+
+**Rule of thumb:** If a reviewer can't understand your production code changes in 15 minutes, the PR is too big.
+
 ## Testing
 
 ### Test Organization

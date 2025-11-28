@@ -105,6 +105,7 @@ runs:
         ARGS="$ARGS --max-units ${{ inputs.max_prod_units }}"
         ARGS="$ARGS --max-score ${{ inputs.max_weighted_score }}"
         ARGS="$ARGS --format ${{ inputs.output_format }}"
+        ARGS="$ARGS --no-fail"
 
         if [ -n "${{ inputs.max_prod_lines }}" ]; then
           ARGS="$ARGS --max-lines ${{ inputs.max_prod_lines }}"
@@ -138,6 +139,7 @@ runs:
         ARGS="$ARGS --max-units ${{ inputs.max_prod_units }}"
         ARGS="$ARGS --max-score ${{ inputs.max_weighted_score }}"
         ARGS="$ARGS --format comment"
+        ARGS="$ARGS --no-fail"
 
         if [ -n "${{ inputs.max_prod_lines }}" ]; then
           ARGS="$ARGS --max-lines ${{ inputs.max_prod_lines }}"

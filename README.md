@@ -85,6 +85,9 @@ git diff main | rust-diff-analyzer
 # Set custom limits
 rust-diff-analyzer --diff-file changes.diff --max-units 50 --max-score 200 --max-lines 300
 
+# Don't exit with code 1 when limits exceeded (useful in scripts)
+rust-diff-analyzer --diff-file changes.diff --no-fail
+
 # Different output formats
 rust-diff-analyzer --diff-file changes.diff --format json      # Machine-readable JSON
 rust-diff-analyzer --diff-file changes.diff --format human     # Human-readable text
@@ -92,7 +95,7 @@ rust-diff-analyzer --diff-file changes.diff --format comment   # Markdown for PR
 rust-diff-analyzer --diff-file changes.diff --format github    # GitHub Actions outputs (default)
 ```
 
-The tool will exit with code 1 if limits are exceeded (useful for CI).
+The tool will exit with code 1 if limits are exceeded (useful for CI). Use `--no-fail` to always exit with code 0.
 
 <div align="right"><a href="#table-of-contents">↑ Back to top</a></div>
 

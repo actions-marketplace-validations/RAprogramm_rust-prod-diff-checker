@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `with_impl()` constructor for creating units with impl context
 - Analysis Scope collapsible section in PR comments
 - `MapResult` struct combining changes and scope from `map_changes()`
+- `--no-fail` CLI flag to prevent exit code 1 when limits exceeded
+- PR size analysis job in CI workflow with automatic PR comments
+- Limits table in PR comments showing individual metric status
 
 ### Changed
 

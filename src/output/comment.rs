@@ -45,7 +45,9 @@ pub fn format_comment(result: &AnalysisResult, config: &Config) -> String {
     // Verdict at the top - most important info first
     if summary.exceeds_limit {
         output.push_str("> [!CAUTION]\n");
-        output.push_str("> **PR exceeds configured limits.** Consider splitting into smaller PRs.\n");
+        output.push_str(
+            "> **PR exceeds configured limits.** Consider splitting into smaller PRs.\n",
+        );
 
         let mut exceeded = Vec::new();
         if summary.total_prod_units() > config.limits.max_prod_units {
@@ -61,13 +63,13 @@ pub fn format_comment(result: &AnalysisResult, config: &Config) -> String {
                 summary.weighted_score, config.limits.max_weighted_score
             ));
         }
-        if let Some(max_lines) = config.limits.max_prod_lines {
-            if summary.prod_lines_added > max_lines {
-                exceeded.push(format!(
-                    "**{}** lines added (limit: {})",
-                    summary.prod_lines_added, max_lines
-                ));
-            }
+        if let Some(max_lines) = config.limits.max_prod_lines
+            && summary.prod_lines_added > max_lines
+        {
+            exceeded.push(format!(
+                "**{}** lines added (limit: {})",
+                summary.prod_lines_added, max_lines
+            ));
         }
         if !exceeded.is_empty() {
             output.push_str(">\n");
@@ -82,7 +84,10 @@ pub fn format_comment(result: &AnalysisResult, config: &Config) -> String {
 
     // Limits section - collapsible
     output.push_str("\n<details>\n");
-    output.push_str("<summary><strong>Limits</strong> — configured thresholds for this repository</summary>\n\n");
+    output.push_str(
+        "<summary><strong>Limits</strong> — configured thresholds for this \
+         repository</summary>\n\n",
+    );
     output.push_str("> *Each metric is compared against its configured maximum. ");
     output.push_str("If any limit is exceeded, the PR check fails.*\n\n");
     output.push_str("| Metric | Value | Limit | Status |\n");
@@ -123,15 +128,26 @@ pub fn format_comment(result: &AnalysisResult, config: &Config) -> String {
     }
 
     output.push_str("\n**Understanding the metrics:**\n");
-    output.push_str("- **Production Units**: Functions, structs, enums, traits, and other semantic code units in production code\n");
-    output.push_str("- **Weighted Score**: Complexity score based on unit types (public APIs weigh more than private)\n");
+    output.push_str(
+        "- **Production Units**: Functions, structs, enums, traits, and other semantic code \
+         units in production code\n",
+    );
+    output.push_str(
+        "- **Weighted Score**: Complexity score based on unit types (public APIs weigh more than \
+         private)\n",
+    );
     output.push_str("- **Lines Added**: Raw count of new lines in production code\n");
     output.push_str("\n</details>\n");
 
     // Summary section - collapsible
     output.push_str("\n<details>\n");
-    output.push_str("<summary><strong>Summary</strong> — breakdown of changes by category</summary>\n\n");
-    output.push_str("> *Production code counts toward limits. Test code is tracked but doesn't affect limits.*\n\n");
+    output.push_str(
+        "<summary><strong>Summary</strong> — breakdown of changes by category</summary>\n\n",
+    );
+    output.push_str(
+        "> *Production code counts toward limits. Test code is tracked but doesn't affect \
+         limits.*\n\n",
+    );
     output.push_str("| Metric | Production | Test |\n");
     output.push_str("|--------|----------:|-----:|\n");
     output.push_str(&format!("| Functions | {} | - |\n", summary.prod_functions));
@@ -166,7 +182,10 @@ pub fn format_comment(result: &AnalysisResult, config: &Config) -> String {
                 "<summary><strong>Production Changes</strong> — {} units modified</summary>\n\n",
                 prod_changes.len()
             ));
-            output.push_str("> *Semantic units (functions, structs, etc.) that were added or modified in production code.*\n\n");
+            output.push_str(
+                "> *Semantic units (functions, structs, etc.) that were added or modified in \
+                 production code.*\n\n",
+            );
             output.push_str("| File | Unit | Type | Changes |\n");
             output.push_str("|------|------|:----:|--------:|\n");
             for change in prod_changes {

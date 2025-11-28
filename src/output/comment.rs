@@ -35,7 +35,6 @@ const COMMENT_MARKER: &str = "<!-- rust-diff-analyzer-comment -->";
 /// ```
 pub fn format_comment(result: &AnalysisResult, config: &Config) -> String {
     let summary = &result.summary;
-    let status = if summary.exceeds_limit { "❌" } else { "✅" };
 
     let mut output = String::new();
 

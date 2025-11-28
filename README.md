@@ -34,7 +34,11 @@ A tool that analyzes Pull Requests in Rust projects and enforces PR size limits 
 ## Features
 
 - **Semantic Analysis**: Parses Rust code to identify code units (functions, structs, enums, traits, impl blocks) rather than just counting lines
+- **Qualified Names**: Shows fully qualified unit names (e.g., `Parser::new`, `Display for Item::display`)
+- **Line Ranges**: Displays exact line numbers where changes occurred (e.g., `src/lib.rs:24-38`)
+- **Per-Unit Stats**: Shows lines added/removed for each individual unit (`+5 -3`)
 - **Smart Classification**: Automatically distinguishes between production, test, benchmark, and example code
+- **Analysis Scope**: Reports analyzed files, excluded patterns, and skipped files
 - **Weighted Scoring**: Assigns different weights to different code types (public functions are worth more than private ones)
 - **Flexible Limits**: Set global limits, per-type limits (e.g., max 5 functions), and line-based limits
 - **PR Comments**: Automatically posts formatted analysis results as comments on pull requests
@@ -169,7 +173,45 @@ When `post_comment: true` is set, the action posts a formatted comment on the PR
 The comment includes:
 - **Summary table**: Production vs test metrics at a glance
 - **Weighted score**: Total score with pass/fail indicator
-- **Changed units**: Collapsible list showing exactly which functions/structs changed
+- **Changed units table**: Detailed breakdown with:
+  - File path with line range (e.g., `src/lib.rs:24-38`)
+  - Qualified unit name (e.g., `Parser::new`)
+  - Unit type (function, struct, etc.)
+  - Lines changed (`+5 -3`)
+- **Analysis scope**: Collapsible section showing analyzed files, excluded patterns, and skipped files
+
+Example PR comment output:
+
+```markdown
+## Rust Diff Analysis
+
+| Metric | Production | Test |
+|--------|------------|------|
+| Functions | 3 | - |
+| Structs/Enums | 1 | - |
+| Lines added | 45 | 20 |
+
+### Score
+**15** / 100 ✅
+
+### Changed Units
+
+#### Production (4)
+
+| File | Unit | Type | Changes |
+|------|------|------|---------|
+| `src/parser.rs:24-38` | `Parser::new` | function | +12 -3 |
+| `src/parser.rs:45-67` | `Parser::parse` | function | +18 -5 |
+
+<details>
+<summary>Analysis Scope</summary>
+
+**Analyzed:** 3 Rust files
+
+**Skipped files:**
+- 5 non-Rust files
+</details>
+```
 
 This provides reviewers with immediate context about the PR's scope.
 
@@ -351,18 +393,25 @@ fn main() -> Result<(), rust_diff_analyzer::AppError> {
 
     // Map changes to semantic units
     // The closure provides file content for AST parsing
-    let changes = map_changes(&file_diffs, &config, |path| {
+    let result = map_changes(&file_diffs, &config, |path| {
         std::fs::read_to_string(path)
     })?;
 
-    // Process the results
-    for change in changes {
-        println!("{}: {} ({})",
+    // Access changes and scope information
+    for change in &result.changes {
+        println!("{}:{}-{}: {} ({})",
             change.file_path.display(),
-            change.unit.name,
+            change.unit.span.start,
+            change.unit.span.end,
+            change.unit.qualified_name(),  // e.g., "Parser::new"
             change.classification.as_str()
         );
+        println!("  Lines: +{} -{}", change.lines_added, change.lines_removed);
     }
+
+    // Check analysis scope
+    println!("Analyzed {} files", result.scope.analyzed_files.len());
+    println!("Skipped {} non-Rust files", result.scope.non_rust_count());
 
     Ok(())
 }

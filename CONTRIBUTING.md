@@ -192,21 +192,33 @@ src/
 ├── config.rs           # Configuration handling
 ├── analysis/
 │   ├── mod.rs          # Analysis module
+│   ├── ast_visitor.rs  # AST visitor for semantic extraction
 │   ├── extractor.rs    # AST extraction
-│   └── mapper.rs       # Change mapping
+│   └── mapper.rs       # Change mapping (returns MapResult)
+├── classifier/
+│   └── ...             # Code classification logic
 ├── git/
 │   └── diff_parser.rs  # Git diff parsing
+├── types/
+│   ├── change.rs       # Change, Summary, AnalysisResult
+│   ├── classification.rs # CodeType enum
+│   ├── scope.rs        # AnalysisScope, ExclusionReason
+│   └── semantic_unit.rs # SemanticUnit with qualified_name()
 └── output/
     ├── formatter.rs    # Output formatting
+    ├── comment.rs      # PR comment format with tables
     ├── github.rs       # GitHub Actions format
     └── json.rs         # JSON format
 ```
 
 ### Key Types
 
-- `CodeUnit` - Represents a code element (function, struct, etc.)
-- `CodeChange` - A change to a code unit with classification
-- `Classification` - Production, Test, Benchmark, Example
+- `SemanticUnit` - Represents a code element with `qualified_name()` for impl context
+- `Change` - A change to a semantic unit with classification and per-unit line counts
+- `MapResult` - Result from `map_changes()` containing changes and `AnalysisScope`
+- `AnalysisScope` - Tracks analyzed files, skipped files, and exclusion patterns
+- `ExclusionReason` - Why a file was skipped (NonRust, IgnorePattern)
+- `CodeType` - Classification: Production, Test, Benchmark, Example
 - `Config` - Runtime configuration
 
 ## Adding Features

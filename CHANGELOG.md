@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Qualified names for semantic units (e.g., `Parser::new`, `Display for Item::display`)
+- Line ranges in PR comment output showing exact locations (`src/lib.rs:24-38`)
+- Per-unit line change statistics (`+5 -3` for each unit)
+- `AnalysisScope` struct tracking analyzed and skipped files
+- `ExclusionReason` enum for categorizing skipped files (NonRust, IgnorePattern)
+- `qualified_name()` method on `SemanticUnit` for fully qualified names
+- `with_impl()` constructor for creating units with impl context
+- Analysis Scope collapsible section in PR comments
+- `MapResult` struct combining changes and scope from `map_changes()`
+
+### Changed
+
+- PR comment format now uses tables for changed units
+- `map_changes()` now returns `MapResult` instead of `Vec<Change>`
+- `AnalysisResult::new()` now requires `AnalysisScope` parameter
+- Improved comment output with detailed file paths and line numbers
+
 ## [1.1.1] - 2025-11-23
 
 ### Miscellaneous

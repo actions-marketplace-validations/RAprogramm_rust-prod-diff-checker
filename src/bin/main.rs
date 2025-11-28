@@ -52,6 +52,10 @@ struct Args {
     /// Base directory for resolving file paths
     #[arg(short, long, default_value = ".")]
     base_dir: PathBuf,
+
+    /// Don't exit with code 1 when limits are exceeded
+    #[arg(long)]
+    no_fail: bool,
 }
 
 #[derive(clap::ValueEnum, Clone, Debug)]
@@ -111,10 +115,12 @@ fn run() -> Result<(), AppError> {
     let file_diffs = parse_diff(&diff_content)?;
 
     let base_dir = args.base_dir.clone();
-    let changes = map_changes(&file_diffs, &config, |path| {
+    let map_result = map_changes(&file_diffs, &config, |path| {
         let full_path = base_dir.join(path);
         fs::read_to_string(full_path)
     })?;
+    let changes = map_result.changes;
+    let scope = map_result.scope;
 
     let mut summary = Summary::default();
 
@@ -144,12 +150,12 @@ fn run() -> Result<(), AppError> {
             .unwrap_or(false)
         || check_per_type_limits(&changes, &config);
 
-    let result = AnalysisResult::new(changes, summary);
+    let result = AnalysisResult::new(changes, summary, scope);
 
     let output = format_output(&result, &config)?;
     print!("{}", output);
 
-    if result.summary.exceeds_limit && config.limits.fail_on_exceed {
+    if result.summary.exceeds_limit && config.limits.fail_on_exceed && !args.no_fail {
         process::exit(1);
     }
 

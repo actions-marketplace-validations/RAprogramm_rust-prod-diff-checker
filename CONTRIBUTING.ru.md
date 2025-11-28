@@ -192,21 +192,33 @@ src/
 ├── config.rs           # Работа с конфигурацией
 ├── analysis/
 │   ├── mod.rs          # Модуль анализа
+│   ├── ast_visitor.rs  # AST visitor для семантического извлечения
 │   ├── extractor.rs    # Извлечение AST
-│   └── mapper.rs       # Маппинг изменений
+│   └── mapper.rs       # Маппинг изменений (возвращает MapResult)
+├── classifier/
+│   └── ...             # Логика классификации кода
 ├── git/
 │   └── diff_parser.rs  # Парсинг git diff
+├── types/
+│   ├── change.rs       # Change, Summary, AnalysisResult
+│   ├── classification.rs # Enum CodeType
+│   ├── scope.rs        # AnalysisScope, ExclusionReason
+│   └── semantic_unit.rs # SemanticUnit с qualified_name()
 └── output/
     ├── formatter.rs    # Форматирование вывода
+    ├── comment.rs      # Формат PR комментария с таблицами
     ├── github.rs       # Формат GitHub Actions
     └── json.rs         # JSON формат
 ```
 
 ### Ключевые типы
 
-- `CodeUnit` - Представляет элемент кода (функция, структура и т.д.)
-- `CodeChange` - Изменение code unit с классификацией
-- `Classification` - Production, Test, Benchmark, Example
+- `SemanticUnit` - Элемент кода с `qualified_name()` для контекста impl
+- `Change` - Изменение semantic unit с классификацией и счётчиком строк
+- `MapResult` - Результат `map_changes()` содержит изменения и `AnalysisScope`
+- `AnalysisScope` - Отслеживает проанализированные и пропущенные файлы
+- `ExclusionReason` - Причина пропуска файла (NonRust, IgnorePattern)
+- `CodeType` - Классификация: Production, Test, Benchmark, Example
 - `Config` - Конфигурация времени выполнения
 
 ## Добавление функциональности

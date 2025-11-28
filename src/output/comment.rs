@@ -65,11 +65,45 @@ pub fn format_comment(result: &AnalysisResult, config: &Config) -> String {
         summary.test_units
     ));
 
-    output.push_str("\n### Score\n\n");
+    output.push_str("\n### Limits\n\n");
+    output.push_str("| Metric | Value | Limit | Status |\n");
+    output.push_str("|--------|-------|-------|--------|\n");
+
+    let units_status = if summary.total_prod_units() > config.limits.max_prod_units {
+        "❌"
+    } else {
+        "✅"
+    };
     output.push_str(&format!(
-        "**{}** / {} {}\n",
-        summary.weighted_score, config.limits.max_weighted_score, status
+        "| Units | {} | {} | {} |\n",
+        summary.total_prod_units(),
+        config.limits.max_prod_units,
+        units_status
     ));
+
+    let score_status = if summary.weighted_score > config.limits.max_weighted_score {
+        "❌"
+    } else {
+        "✅"
+    };
+    output.push_str(&format!(
+        "| Weighted Score | {} | {} | {} |\n",
+        summary.weighted_score, config.limits.max_weighted_score, score_status
+    ));
+
+    if let Some(max_lines) = config.limits.max_prod_lines {
+        let lines_status = if summary.prod_lines_added > max_lines {
+            "❌"
+        } else {
+            "✅"
+        };
+        output.push_str(&format!(
+            "| Lines Added | {} | {} | {} |\n",
+            summary.prod_lines_added, max_lines, lines_status
+        ));
+    }
+
+    output.push_str(&format!("\n**Overall:** {}\n", status));
 
     if config.output.include_details && !result.changes.is_empty() {
         output.push_str("\n### Changed Units\n\n");

@@ -103,7 +103,39 @@ pub fn format_comment(result: &AnalysisResult, config: &Config) -> String {
         ));
     }
 
-    output.push_str(&format!("\n**Overall:** {}\n", status));
+    if summary.exceeds_limit {
+        output.push_str("\n> [!CAUTION]\n");
+        output.push_str("> **PR exceeds configured limits.** Consider splitting into smaller PRs.\n");
+
+        let mut exceeded = Vec::new();
+        if summary.total_prod_units() > config.limits.max_prod_units {
+            exceeded.push(format!(
+                "units ({} > {})",
+                summary.total_prod_units(),
+                config.limits.max_prod_units
+            ));
+        }
+        if summary.weighted_score > config.limits.max_weighted_score {
+            exceeded.push(format!(
+                "weighted score ({} > {})",
+                summary.weighted_score, config.limits.max_weighted_score
+            ));
+        }
+        if let Some(max_lines) = config.limits.max_prod_lines {
+            if summary.prod_lines_added > max_lines {
+                exceeded.push(format!(
+                    "lines added ({} > {})",
+                    summary.prod_lines_added, max_lines
+                ));
+            }
+        }
+        if !exceeded.is_empty() {
+            output.push_str(&format!("> \n> Exceeded: {}\n", exceeded.join(", ")));
+        }
+    } else {
+        output.push_str("\n> [!TIP]\n");
+        output.push_str("> **PR size is within limits.** Good job keeping changes focused!\n");
+    }
 
     if config.output.include_details && !result.changes.is_empty() {
         let prod_changes: Vec<_> = result.production_changes().collect();
@@ -283,7 +315,8 @@ mod tests {
         let config = Config::default();
         let output = format_comment(&result, &config);
 
-        assert!(output.contains("❌"));
+        assert!(output.contains("[!CAUTION]"));
+        assert!(output.contains("PR exceeds configured limits"));
     }
 
     #[test]

@@ -42,31 +42,51 @@ pub fn format_comment(result: &AnalysisResult, config: &Config) -> String {
     output.push('\n');
     output.push_str("## Rust Diff Analysis\n\n");
 
-    output.push_str("| Metric | Production | Test |\n");
-    output.push_str("|--------|------------|------|\n");
-    output.push_str(&format!("| Functions | {} | - |\n", summary.prod_functions));
-    output.push_str(&format!(
-        "| Structs/Enums | {} | - |\n",
-        summary.prod_structs
-    ));
-    output.push_str(&format!("| Other | {} | - |\n", summary.prod_other));
-    output.push_str(&format!(
-        "| Lines added | {} | {} |\n",
-        summary.prod_lines_added, summary.test_lines_added
-    ));
-    output.push_str(&format!(
-        "| Lines removed | {} | {} |\n",
-        summary.prod_lines_removed, summary.test_lines_removed
-    ));
-    output.push_str(&format!(
-        "| Total units | {} | {} |\n",
-        summary.total_prod_units(),
-        summary.test_units
-    ));
+    // Verdict at the top - most important info first
+    if summary.exceeds_limit {
+        output.push_str("> [!CAUTION]\n");
+        output.push_str("> **PR exceeds configured limits.** Consider splitting into smaller PRs.\n");
 
-    output.push_str("\n### Limits\n\n");
+        let mut exceeded = Vec::new();
+        if summary.total_prod_units() > config.limits.max_prod_units {
+            exceeded.push(format!(
+                "**{}** units (limit: {})",
+                summary.total_prod_units(),
+                config.limits.max_prod_units
+            ));
+        }
+        if summary.weighted_score > config.limits.max_weighted_score {
+            exceeded.push(format!(
+                "**{}** weighted score (limit: {})",
+                summary.weighted_score, config.limits.max_weighted_score
+            ));
+        }
+        if let Some(max_lines) = config.limits.max_prod_lines {
+            if summary.prod_lines_added > max_lines {
+                exceeded.push(format!(
+                    "**{}** lines added (limit: {})",
+                    summary.prod_lines_added, max_lines
+                ));
+            }
+        }
+        if !exceeded.is_empty() {
+            output.push_str(">\n");
+            for item in &exceeded {
+                output.push_str(&format!("> - {}\n", item));
+            }
+        }
+    } else {
+        output.push_str("> [!TIP]\n");
+        output.push_str("> **PR size is within limits.** Good job keeping changes focused!\n");
+    }
+
+    // Limits section - collapsible
+    output.push_str("\n<details>\n");
+    output.push_str("<summary><strong>Limits</strong> — configured thresholds for this repository</summary>\n\n");
+    output.push_str("Each metric is compared against its configured maximum. ");
+    output.push_str("If any limit is exceeded, the PR check fails.\n\n");
     output.push_str("| Metric | Value | Limit | Status |\n");
-    output.push_str("|--------|-------|-------|--------|\n");
+    output.push_str("|--------|------:|------:|:------:|\n");
 
     let units_status = if summary.total_prod_units() > config.limits.max_prod_units {
         "❌"
@@ -74,7 +94,7 @@ pub fn format_comment(result: &AnalysisResult, config: &Config) -> String {
         "✅"
     };
     output.push_str(&format!(
-        "| Units | {} | {} | {} |\n",
+        "| Production Units | {} | {} | {} |\n",
         summary.total_prod_units(),
         config.limits.max_prod_units,
         units_status
@@ -102,40 +122,40 @@ pub fn format_comment(result: &AnalysisResult, config: &Config) -> String {
         ));
     }
 
-    if summary.exceeds_limit {
-        output.push_str("\n> [!CAUTION]\n");
-        output.push_str("> **PR exceeds configured limits.** Consider splitting into smaller PRs.\n");
+    output.push_str("\n**Understanding the metrics:**\n");
+    output.push_str("- **Production Units**: Functions, structs, enums, traits, and other semantic code units in production code\n");
+    output.push_str("- **Weighted Score**: Complexity score based on unit types (public APIs weigh more than private)\n");
+    output.push_str("- **Lines Added**: Raw count of new lines in production code\n");
+    output.push_str("\n</details>\n");
 
-        let mut exceeded = Vec::new();
-        if summary.total_prod_units() > config.limits.max_prod_units {
-            exceeded.push(format!(
-                "units ({} > {})",
-                summary.total_prod_units(),
-                config.limits.max_prod_units
-            ));
-        }
-        if summary.weighted_score > config.limits.max_weighted_score {
-            exceeded.push(format!(
-                "weighted score ({} > {})",
-                summary.weighted_score, config.limits.max_weighted_score
-            ));
-        }
-        if let Some(max_lines) = config.limits.max_prod_lines {
-            if summary.prod_lines_added > max_lines {
-                exceeded.push(format!(
-                    "lines added ({} > {})",
-                    summary.prod_lines_added, max_lines
-                ));
-            }
-        }
-        if !exceeded.is_empty() {
-            output.push_str(&format!("> \n> Exceeded: {}\n", exceeded.join(", ")));
-        }
-    } else {
-        output.push_str("\n> [!TIP]\n");
-        output.push_str("> **PR size is within limits.** Good job keeping changes focused!\n");
-    }
+    // Summary section - collapsible
+    output.push_str("\n<details>\n");
+    output.push_str("<summary><strong>Summary</strong> — breakdown of changes by category</summary>\n\n");
+    output.push_str("Production code counts toward limits. Test code is tracked but doesn't affect limits.\n\n");
+    output.push_str("| Metric | Production | Test |\n");
+    output.push_str("|--------|----------:|-----:|\n");
+    output.push_str(&format!("| Functions | {} | - |\n", summary.prod_functions));
+    output.push_str(&format!(
+        "| Structs/Enums | {} | - |\n",
+        summary.prod_structs
+    ));
+    output.push_str(&format!("| Other | {} | - |\n", summary.prod_other));
+    output.push_str(&format!(
+        "| Lines added | +{} | +{} |\n",
+        summary.prod_lines_added, summary.test_lines_added
+    ));
+    output.push_str(&format!(
+        "| Lines removed | -{} | -{} |\n",
+        summary.prod_lines_removed, summary.test_lines_removed
+    ));
+    output.push_str(&format!(
+        "| **Total units** | **{}** | {} |\n",
+        summary.total_prod_units(),
+        summary.test_units
+    ));
+    output.push_str("\n</details>\n");
 
+    // Changed units - collapsible
     if config.output.include_details && !result.changes.is_empty() {
         let prod_changes: Vec<_> = result.production_changes().collect();
         let test_changes: Vec<_> = result.test_changes().collect();
@@ -143,11 +163,12 @@ pub fn format_comment(result: &AnalysisResult, config: &Config) -> String {
         if !prod_changes.is_empty() {
             output.push_str("\n<details>\n");
             output.push_str(&format!(
-                "<summary>Production Changes ({})</summary>\n\n",
+                "<summary><strong>Production Changes</strong> — {} units modified</summary>\n\n",
                 prod_changes.len()
             ));
+            output.push_str("Semantic units (functions, structs, etc.) that were added or modified in production code.\n\n");
             output.push_str("| File | Unit | Type | Changes |\n");
-            output.push_str("|------|------|------|--------|\n");
+            output.push_str("|------|------|:----:|--------:|\n");
             for change in prod_changes {
                 output.push_str(&format_change_row(change));
             }
@@ -157,11 +178,12 @@ pub fn format_comment(result: &AnalysisResult, config: &Config) -> String {
         if !test_changes.is_empty() {
             output.push_str("\n<details>\n");
             output.push_str(&format!(
-                "<summary>Test Changes ({})</summary>\n\n",
+                "<summary><strong>Test Changes</strong> — {} units modified</summary>\n\n",
                 test_changes.len()
             ));
+            output.push_str("Test code changes don't count toward PR size limits.\n\n");
             output.push_str("| File | Unit | Type | Changes |\n");
-            output.push_str("|------|------|------|--------|\n");
+            output.push_str("|------|------|:----:|--------:|\n");
             for change in test_changes {
                 output.push_str(&format_change_row(change));
             }

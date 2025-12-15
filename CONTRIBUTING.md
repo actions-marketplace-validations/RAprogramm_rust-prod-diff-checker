@@ -95,6 +95,25 @@ Types:
 4. Create PR with descriptive title
 5. Include `Closes #<issue>` in description
 
+### Keep Production Code Changes Small
+
+**Code review quality degrades with size.** What matters is *production code*, not total lines changed.
+
+| Production Code | Review Quality | Risk |
+|-----------------|----------------|------|
+| < 100 lines | Thorough | Low |
+| 100-300 lines | Moderate | Medium |
+| 300+ lines | Superficial | High |
+
+**Tests and benchmarks don't count the same way:**
+
+- A PR with 50 lines in `src/` and 1000 lines of tests is **easy to review**
+- A PR with 300 lines in `src/` and 0 tests is **hard to review and risky**
+
+Use [rust-prod-diff-checker](https://github.com/RAprogramm/rust-prod-diff-checker) GitHub Action to automatically analyze PR size and separate production changes from tests/benchmarks.
+
+**Rule of thumb:** If a reviewer can't understand your production code changes in 15 minutes, the PR is too big.
+
 ## Testing
 
 ### Test Organization
@@ -173,21 +192,33 @@ src/
 ├── config.rs           # Configuration handling
 ├── analysis/
 │   ├── mod.rs          # Analysis module
+│   ├── ast_visitor.rs  # AST visitor for semantic extraction
 │   ├── extractor.rs    # AST extraction
-│   └── mapper.rs       # Change mapping
+│   └── mapper.rs       # Change mapping (returns MapResult)
+├── classifier/
+│   └── ...             # Code classification logic
 ├── git/
 │   └── diff_parser.rs  # Git diff parsing
+├── types/
+│   ├── change.rs       # Change, Summary, AnalysisResult
+│   ├── classification.rs # CodeType enum
+│   ├── scope.rs        # AnalysisScope, ExclusionReason
+│   └── semantic_unit.rs # SemanticUnit with qualified_name()
 └── output/
     ├── formatter.rs    # Output formatting
+    ├── comment.rs      # PR comment format with tables
     ├── github.rs       # GitHub Actions format
     └── json.rs         # JSON format
 ```
 
 ### Key Types
 
-- `CodeUnit` - Represents a code element (function, struct, etc.)
-- `CodeChange` - A change to a code unit with classification
-- `Classification` - Production, Test, Benchmark, Example
+- `SemanticUnit` - Represents a code element with `qualified_name()` for impl context
+- `Change` - A change to a semantic unit with classification and per-unit line counts
+- `MapResult` - Result from `map_changes()` containing changes and `AnalysisScope`
+- `AnalysisScope` - Tracks analyzed files, skipped files, and exclusion patterns
+- `ExclusionReason` - Why a file was skipped (NonRust, IgnorePattern)
+- `CodeType` - Classification: Production, Test, Benchmark, Example
 - `Config` - Runtime configuration
 
 ## Adding Features

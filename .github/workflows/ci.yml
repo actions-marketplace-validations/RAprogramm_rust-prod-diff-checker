@@ -25,7 +25,7 @@ jobs:
       reuse: ${{ steps.filter.outputs.reuse }}
     steps:
       - uses: actions/checkout@v6
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
@@ -120,19 +120,20 @@ jobs:
       - name: Generate JUnit report
         run: cargo nextest run --all-features --profile ci
         continue-on-error: true
-      - name: Upload coverage to Codecov
+      - name: Upload coverage and test results to Codecov
         if: github.event_name != 'pull_request'
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: lcov.info
           fail_ci_if_error: false
-      - name: Upload test results to Codecov
-        if: github.event_name != 'pull_request' && !cancelled()
-        uses: codecov/test-results-action@v1
+          report_type: test_results
+
+      - name: Upload test results artifact
+        uses: actions/upload-artifact@v7
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: target/nextest/ci/results.junit.xml
+          name: test-results
+          path: target/nextest/ci/results.junit.xml
 
   doc:
     name: Documentation
@@ -179,6 +180,8 @@ jobs:
       - uses: rustsec/audit-check@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
   reuse:
     name: REUSE Compliance
@@ -210,7 +213,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - run: cargo build --release --all-features
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: rust-diff-analyzer
           path: target/release/rust-diff-analyzer
@@ -375,7 +378,7 @@ jobs:
           cd target/${{ matrix.target }}/release
           Compress-Archive -Path rust-diff-analyzer.exe -DestinationPath ../../../rust-diff-analyzer-${{ matrix.target }}.zip
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: rust-diff-analyzer-${{ matrix.target }}
           path: rust-diff-analyzer-${{ matrix.target }}.${{ matrix.archive }}
@@ -404,12 +407,12 @@ jobs:
         env:
           OUTPUT: RELEASE_NOTES.md
 
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           path: artifacts
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           body_path: RELEASE_NOTES.md
           files: artifacts/**/*

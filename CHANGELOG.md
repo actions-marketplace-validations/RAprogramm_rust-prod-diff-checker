@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 
+- Update changelog [skip ci] ([3d382e6](https://github.com/RAprogramm/rust-prod-diff-checker/commit/3d382e6fd2b8b6d1290c9855b7368e3e847c9903))
 - Update changelog [skip ci] ([0e1406c](https://github.com/RAprogramm/rust-prod-diff-checker/commit/0e1406cae0de556c24e42028bc1b7d22d288928a))
 - Update changelog [skip ci] ([5ce2da1](https://github.com/RAprogramm/rust-prod-diff-checker/commit/5ce2da1cb6680a7d72723a525ad5884907077fcd))
 - Update changelog [skip ci] ([f96cddb](https://github.com/RAprogramm/rust-prod-diff-checker/commit/f96cddbfe5212a2e54d6c201117aeaa818605a9c))

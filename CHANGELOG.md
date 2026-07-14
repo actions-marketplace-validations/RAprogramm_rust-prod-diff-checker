@@ -5,11 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.0] - 2026-07-14
+
+### CI/CD
+
+- Bump the github-actions group with 2 updates ([08d8511](https://github.com/RAprogramm/rust-prod-diff-checker/commit/08d851152060078ab20286f4606b6f0638e0478a))
+
+### Documentation
+
+- Update changelog [skip ci] ([ba2e0c7](https://github.com/RAprogramm/rust-prod-diff-checker/commit/ba2e0c7f1491d68ae68088df852b90a66132938e))
+- Update changelog [skip ci] ([f232ea0](https://github.com/RAprogramm/rust-prod-diff-checker/commit/f232ea09b079183a6a61f168099ebc970eec32a5))
+- Update changelog [skip ci] ([f6a028f](https://github.com/RAprogramm/rust-prod-diff-checker/commit/f6a028f121146ccfdc8bbdcee7eab76750472aa2))
+- Update changelog [skip ci] ([d6fd66f](https://github.com/RAprogramm/rust-prod-diff-checker/commit/d6fd66f11b1dc8d9a4b4ca35e0e43849f36e35b3))
+- Update changelog [skip ci] ([99d76f3](https://github.com/RAprogramm/rust-prod-diff-checker/commit/99d76f39b4b48dd06640ec6c12ddd84cfe3afc9b))
+- Add banner to README ([00f29e4](https://github.com/RAprogramm/rust-prod-diff-checker/commit/00f29e43bc96cbb4624705b513f6eeb1d02eafcb))
+- Update changelog [skip ci] ([e950748](https://github.com/RAprogramm/rust-prod-diff-checker/commit/e9507480fa97659e481ee400b7d8751c8e4405ae))
+- Update changelog [skip ci] ([3d382e6](https://github.com/RAprogramm/rust-prod-diff-checker/commit/3d382e6fd2b8b6d1290c9855b7368e3e847c9903))
+- Update changelog [skip ci] ([0e1406c](https://github.com/RAprogramm/rust-prod-diff-checker/commit/0e1406cae0de556c24e42028bc1b7d22d288928a))
+- Update changelog [skip ci] ([5ce2da1](https://github.com/RAprogramm/rust-prod-diff-checker/commit/5ce2da1cb6680a7d72723a525ad5884907077fcd))
+- Update changelog [skip ci] ([f96cddb](https://github.com/RAprogramm/rust-prod-diff-checker/commit/f96cddbfe5212a2e54d6c201117aeaa818605a9c))
 
 ### Miscellaneous
 
+- Bump masterror to 0.29 ([afba0e7](https://github.com/RAprogramm/rust-prod-diff-checker/commit/afba0e79b1e32c7970b94348d2afb1bed11a49b3))
 - Bump version to 1.6.0 ([569dcc3](https://github.com/RAprogramm/rust-prod-diff-checker/commit/569dcc312bb7230efda2ee5ec9815c55f6f03b31))
+
+### Deps
+
+- Bump syn from 2.0.117 to 2.0.118 in the rust-dependencies group ([#37](https://github.com/RAprogramm/rust-prod-diff-checker/issues/37)) ([29b305f](https://github.com/RAprogramm/rust-prod-diff-checker/commit/29b305f91e386dd37af1551a04c9aa555ebc8cef))
+- Bump the rust-dependencies group with 2 updates ([#35](https://github.com/RAprogramm/rust-prod-diff-checker/issues/35)) ([08a06dd](https://github.com/RAprogramm/rust-prod-diff-checker/commit/08a06dd0084fabbeca9aa2da88a9c342ff11cb31))
+- Bump the rust-dependencies group across 1 directory with 2 updates ([#34](https://github.com/RAprogramm/rust-prod-diff-checker/issues/34)) ([40efc9b](https://github.com/RAprogramm/rust-prod-diff-checker/commit/40efc9be3df8af8d94e4531b4244cbd027e3904f))
 
 ## [1.5.0] - 2026-04-06
 
@@ -205,7 +230,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Filter Rust keywords in property tests ([1ee0fcc](https://github.com/RAprogramm/rust-prod-diff-checker/commit/1ee0fcca334e6cc4077b93a47ba453b6c0cab6cf))
 
-[Unreleased]: https://github.com/RAprogramm/rust-prod-diff-checker/compare/v1.5.0...HEAD
+[2.0.0]: https://github.com/RAprogramm/rust-prod-diff-checker/compare/v1.5.0...v2.0.0
 [1.5.0]: https://github.com/RAprogramm/rust-prod-diff-checker/compare/v1.4.1...v1.5.0
 [1.4.1]: https://github.com/RAprogramm/rust-prod-diff-checker/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/RAprogramm/rust-prod-diff-checker/compare/v1.3.0...v1.4.0

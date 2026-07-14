@@ -324,7 +324,6 @@ impl Config {
             .into());
         }
 
-        // Validate ignored_authors - check for duplicates
         let mut seen = std::collections::HashSet::new();
         for author in &self.classification.ignored_authors {
             if author.is_empty() {
@@ -371,6 +370,9 @@ impl Config {
 
     /// Checks if a path should be ignored
     ///
+    /// Patterns match whole path components: `src/gen` ignores files under
+    /// `src/gen/` but not `src/generic.rs`.
+    ///
     /// # Arguments
     ///
     /// * `path` - Path to check
@@ -390,11 +392,42 @@ impl Config {
     /// assert!(!config.should_ignore(Path::new("src/lib.rs")));
     /// ```
     pub fn should_ignore(&self, path: &Path) -> bool {
-        let path_str = path.to_string_lossy();
+        self.matched_ignore_pattern(path).is_some()
+    }
+
+    /// Returns the first ignore pattern matching the path, if any
+    ///
+    /// # Arguments
+    ///
+    /// * `path` - Path to check
+    ///
+    /// # Returns
+    ///
+    /// The matching pattern or `None`
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use std::path::Path;
+    ///
+    /// use rust_diff_analyzer::Config;
+    ///
+    /// let mut config = Config::default();
+    /// config
+    ///     .classification
+    ///     .ignore_paths
+    ///     .push("generated/".to_string());
+    /// assert_eq!(
+    ///     config.matched_ignore_pattern(Path::new("generated/api.rs")),
+    ///     Some("generated/")
+    /// );
+    /// ```
+    pub fn matched_ignore_pattern(&self, path: &Path) -> Option<&str> {
         self.classification
             .ignore_paths
             .iter()
-            .any(|p| path_str.contains(p))
+            .find(|p| crate::classifier::path_classifier::path_matches_pattern(path, p))
+            .map(|s| s.as_str())
     }
 
     /// Checks if an author should be ignored
@@ -479,11 +512,10 @@ impl Config {
     /// assert!(!config.is_test_path(Path::new("src/lib.rs")));
     /// ```
     pub fn is_test_path(&self, path: &Path) -> bool {
-        let path_str = path.to_string_lossy();
         self.classification
             .test_paths
             .iter()
-            .any(|p| path_str.contains(p))
+            .any(|p| crate::classifier::path_classifier::path_matches_pattern(path, p))
     }
 
     /// Checks if path is a build script

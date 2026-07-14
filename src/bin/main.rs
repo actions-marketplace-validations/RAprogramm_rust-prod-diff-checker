@@ -3,7 +3,7 @@
 
 use std::{
     fs,
-    io::{self, Read},
+    io::{self, Read, Write},
     path::{Path, PathBuf},
     process,
 };
@@ -12,12 +12,12 @@ use clap::Parser;
 use masterror::AppError;
 use rust_diff_analyzer::{
     analysis::map_changes,
-    classifier::rules::calculate_weight,
+    classifier::rules::{calculate_weight, exceeded_per_type_limits},
     config::{Config, OutputFormat},
     error::FileReadError,
     git::parse_diff,
     output::format_output,
-    types::{AnalysisResult, Change, SemanticUnitKind, Summary},
+    types::{AnalysisResult, SemanticUnitKind, Summary},
 };
 
 /// Semantic analyzer for Rust PR diffs
@@ -56,13 +56,6 @@ struct Args {
     /// Don't exit with code 1 when limits are exceeded
     #[arg(long)]
     no_fail: bool,
-
-    /// Authors to ignore (comma-separated list)
-    ///
-    /// Changes from these authors will be excluded from analysis.
-    /// Example: --ignore-authors "dependabot[bot],github-actions[bot]"
-    #[arg(long, value_delimiter = ',')]
-    ignore_authors: Option<Vec<String>>,
 }
 
 #[derive(clap::ValueEnum, Clone, Debug)]
@@ -115,11 +108,6 @@ fn run() -> Result<(), AppError> {
         config.limits.max_prod_lines = Some(max_lines);
     }
 
-    // Apply CLI ignore_authors (overrides config file)
-    if let Some(authors) = args.ignore_authors {
-        config.classification.ignored_authors = authors;
-    }
-
     config.validate()?;
 
     let diff_content = read_diff(&args.diff_file)?;
@@ -160,12 +148,15 @@ fn run() -> Result<(), AppError> {
             .max_prod_lines
             .map(|limit| summary.prod_lines_added > limit)
             .unwrap_or(false)
-        || check_per_type_limits(&changes, &config);
+        || !exceeded_per_type_limits(&changes, &config).is_empty();
 
     let result = AnalysisResult::new(changes, summary, scope);
 
     let output = format_output(&result, &config)?;
     print!("{}", output);
+    io::stdout()
+        .flush()
+        .map_err(|e| AppError::from(rust_diff_analyzer::error::IoError(e)))?;
 
     if result.summary.exceeds_limit && config.limits.fail_on_exceed && !args.no_fail {
         process::exit(1);
@@ -174,71 +165,21 @@ fn run() -> Result<(), AppError> {
     Ok(())
 }
 
+/// Reads the diff as bytes and converts lossily to UTF-8
+///
+/// `git diff` embeds raw file content, so a single non-UTF-8 line (e.g. a
+/// Latin-1 fixture) must not abort the whole analysis.
 fn read_diff(path: &Option<PathBuf>) -> Result<String, AppError> {
     match path {
-        Some(p) => {
-            fs::read_to_string(p).map_err(|e| AppError::from(FileReadError::new(p.clone(), e)))
-        }
+        Some(p) => fs::read(p)
+            .map(|bytes| String::from_utf8_lossy(&bytes).into_owned())
+            .map_err(|e| AppError::from(FileReadError::new(p.clone(), e))),
         None => {
-            let mut buffer = String::new();
+            let mut buffer = Vec::new();
             io::stdin()
-                .read_to_string(&mut buffer)
+                .read_to_end(&mut buffer)
                 .map_err(|e| AppError::from(rust_diff_analyzer::error::IoError(e)))?;
-            Ok(buffer)
+            Ok(String::from_utf8_lossy(&buffer).into_owned())
         }
     }
-}
-
-fn check_per_type_limits(changes: &[Change], config: &Config) -> bool {
-    let per_type = match &config.limits.per_type {
-        Some(limits) => limits,
-        None => return false,
-    };
-
-    let mut functions = 0;
-    let mut structs = 0;
-    let mut enums = 0;
-    let mut traits = 0;
-    let mut impl_blocks = 0;
-    let mut consts = 0;
-    let mut statics = 0;
-    let mut type_aliases = 0;
-    let mut macros = 0;
-    let mut modules = 0;
-
-    for change in changes {
-        if !change.classification.is_production() {
-            continue;
-        }
-
-        match change.unit.kind {
-            SemanticUnitKind::Function => functions += 1,
-            SemanticUnitKind::Struct => structs += 1,
-            SemanticUnitKind::Enum => enums += 1,
-            SemanticUnitKind::Trait => traits += 1,
-            SemanticUnitKind::Impl => impl_blocks += 1,
-            SemanticUnitKind::Const => consts += 1,
-            SemanticUnitKind::Static => statics += 1,
-            SemanticUnitKind::TypeAlias => type_aliases += 1,
-            SemanticUnitKind::Macro => macros += 1,
-            SemanticUnitKind::Module => modules += 1,
-        }
-    }
-
-    per_type.functions.map(|l| functions > l).unwrap_or(false)
-        || per_type.structs.map(|l| structs > l).unwrap_or(false)
-        || per_type.enums.map(|l| enums > l).unwrap_or(false)
-        || per_type.traits.map(|l| traits > l).unwrap_or(false)
-        || per_type
-            .impl_blocks
-            .map(|l| impl_blocks > l)
-            .unwrap_or(false)
-        || per_type.consts.map(|l| consts > l).unwrap_or(false)
-        || per_type.statics.map(|l| statics > l).unwrap_or(false)
-        || per_type
-            .type_aliases
-            .map(|l| type_aliases > l)
-            .unwrap_or(false)
-        || per_type.macros.map(|l| macros > l).unwrap_or(false)
-        || per_type.modules.map(|l| modules > l).unwrap_or(false)
 }

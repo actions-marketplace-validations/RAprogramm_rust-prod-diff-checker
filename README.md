@@ -1,4 +1,6 @@
-# Rust Diff Analyzer
+<div align="center">
+  <img src=".github/assets/banner.png" alt="Rust Diff Analyzer" width="100%">
+</div>
 
 [![CI](https://github.com/RAprogramm/rust-prod-diff-checker/actions/workflows/ci.yml/badge.svg)](https://github.com/RAprogramm/rust-prod-diff-checker/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/RAprogramm/rust-prod-diff-checker)](https://github.com/RAprogramm/rust-prod-diff-checker/releases/latest)
@@ -88,8 +90,8 @@ rust-diff-analyzer --diff-file changes.diff --max-units 50 --max-score 200 --max
 # Don't exit with code 1 when limits exceeded (useful in scripts)
 rust-diff-analyzer --diff-file changes.diff --no-fail
 
-# Ignore specific authors (comma-separated)
-rust-diff-analyzer --diff-file changes.diff --ignore-authors "dependabot[bot],github-actions[bot]"
+# Author filtering (ignored_authors) is applied by the GitHub Action,
+# which skips analysis when every PR commit comes from an ignored author.
 
 # Different output formats
 rust-diff-analyzer --diff-file changes.diff --format json      # Machine-readable JSON
@@ -236,7 +238,9 @@ test_features = ["test-utils", "testing", "mock"]
 test_paths = ["tests/", "benches/", "examples/"]
 # Paths to completely ignore in analysis
 ignore_paths = ["generated/", "vendor/"]
-# Authors to ignore in PR analysis (e.g., dependabot, renovate, github-actions)
+# Authors to ignore in PR analysis (e.g., dependabot, renovate, github-actions).
+# Used by the GitHub Action: when every commit in the PR comes from an ignored
+# author, the analysis is skipped entirely. Mixed PRs are analyzed in full.
 ignored_authors = ["dependabot[bot]", "github-actions[bot]", "renovate[bot]"]
 
 # Weight settings - how much each item type contributes to the score
@@ -338,9 +342,10 @@ The analyzer automatically classifies code into categories:
 
 ### Classification Rules
 
-1. **File path**: Code in `tests/`, `benches/`, or `examples/` directories is not production
-2. **Attributes**: Functions with `#[test]`, `#[bench]`, or `#[cfg(test)]` are tests
-3. **Module context**: Code inside `mod tests { }` blocks is test code
+1. **File path**: Code in `tests/`, `benches/`, or `examples/` directories is not production. Patterns match whole path components, so `src/attests/mod.rs` is not mistaken for test code and an ignore pattern `src/gen` does not swallow `src/generic.rs`.
+2. **Attributes**: Functions with `#[test]`, `#[bench]`, or multi-segment test macros such as `#[tokio::test]` are tests. `cfg` predicates are parsed structurally: `#[cfg(test)]` and `#[cfg(any(test, ...))]` mark test code, while `#[cfg(not(test))]` stays production. `#[cfg(feature = "...")]` gates are matched against the configured `test_features`.
+3. **Module and impl context**: Code inside `mod tests { }`, `#[cfg(test)] mod` blocks, or `#[cfg(test)] impl` blocks is test code.
+4. **Robustness**: Deleted, unreadable, and unparsable files are skipped and reported in the analysis scope instead of failing the run; renames, quoted paths, and non-UTF-8 diff content are handled.
 
 ### Classification Types
 

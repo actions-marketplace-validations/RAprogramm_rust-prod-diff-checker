@@ -12,6 +12,12 @@ pub enum ExclusionReason {
     NonRust,
     /// File matches an ignore pattern
     IgnorePattern(String),
+    /// File was deleted in the diff
+    Deleted,
+    /// File could not be read
+    ReadError(String),
+    /// File could not be parsed as Rust source
+    ParseError(String),
 }
 
 /// Information about a skipped file
@@ -194,6 +200,62 @@ impl AnalysisScope {
         self.skipped_files
             .iter()
             .filter(|f| matches!(f.reason, ExclusionReason::IgnorePattern(_)))
+            .count()
+    }
+
+    /// Returns count of files skipped because they were deleted in the diff
+    ///
+    /// # Returns
+    ///
+    /// Number of deleted files
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use std::path::PathBuf;
+    ///
+    /// use rust_diff_analyzer::types::{AnalysisScope, ExclusionReason};
+    ///
+    /// let mut scope = AnalysisScope::new();
+    /// scope.add_skipped(PathBuf::from("src/old.rs"), ExclusionReason::Deleted);
+    /// assert_eq!(scope.deleted_count(), 1);
+    /// ```
+    pub fn deleted_count(&self) -> usize {
+        self.skipped_files
+            .iter()
+            .filter(|f| matches!(f.reason, ExclusionReason::Deleted))
+            .count()
+    }
+
+    /// Returns count of files skipped due to read or parse errors
+    ///
+    /// # Returns
+    ///
+    /// Number of files that failed to read or parse
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use std::path::PathBuf;
+    ///
+    /// use rust_diff_analyzer::types::{AnalysisScope, ExclusionReason};
+    ///
+    /// let mut scope = AnalysisScope::new();
+    /// scope.add_skipped(
+    ///     PathBuf::from("src/gone.rs"),
+    ///     ExclusionReason::ReadError("not found".to_string()),
+    /// );
+    /// assert_eq!(scope.error_count(), 1);
+    /// ```
+    pub fn error_count(&self) -> usize {
+        self.skipped_files
+            .iter()
+            .filter(|f| {
+                matches!(
+                    f.reason,
+                    ExclusionReason::ReadError(_) | ExclusionReason::ParseError(_)
+                )
+            })
             .count()
     }
 }
